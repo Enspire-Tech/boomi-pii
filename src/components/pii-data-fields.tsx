@@ -1,7 +1,7 @@
 import * as React from "react";
 // import { useState } from "react";
 
-require("../../styles/pii-data-fields.css");
+// require("../styles/pii-data-fields.css");
 
 declare var manywho: any;
 
@@ -16,7 +16,6 @@ export const PIIDataFields = (props: {id: string, flowKey: string}) => {
         I am here
     </div>
 }
-
 
 manywho.component.register("PIIDataFields", PIIDataFields);
 
