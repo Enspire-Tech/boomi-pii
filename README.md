@@ -1,6 +1,7 @@
-# Getting Started with Create React App
+## Intro
+This project supports the Boomi PII dashboard Flow app.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+It contains custom styling and components for the app.
 
 ## Available Scripts
 
