@@ -1,0 +1,29 @@
+@import (reference) "./variables.less";
+
+
+.pii-data-fields {
+
+    .title-row {
+        //font-weight: bold;
+        font-size: larger;
+        color: @navbar-text-color;
+        background-color: @navbar-background;
+
+        div:not(:last-of-type) {
+
+            border-right: 1px solid white;
+           
+        }
+    }
+
+    .filter-row {
+        border: 1px solid @navbar-background;
+
+        input.search{
+            border: none;
+            border-bottom: 0.5px solid @navbar-text-color;
+            min-width: 90%;
+        }
+    }
+
+}

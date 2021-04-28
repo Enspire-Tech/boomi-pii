@@ -1,20 +1,20 @@
-const path = require('path');
-const flow = require('./package.json').flow;
+const path = require("path");
+const flow = require("./package.json").flow;
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const WriteFilePlugin = require('write-file-webpack-plugin');
+const WriteFilePlugin = require("write-file-webpack-plugin");
 
-const devMode = process.env.NODE_ENV !== 'production';
+const devMode = process.env.NODE_ENV !== "production";
 
 module.exports = {
     entry: "./src/index.tsx",
     output: {
-        filename: 'boomi-pii-components.js',
-        path: path.resolve(__dirname, 'public'),
+        filename: "boomi-pii-components.js",
+        path: path.resolve(__dirname, "public"),
         pathinfo: false
     },
-    devtool: 'cheap-module-source-map', //inline-source-map',
+    devtool: "cheap-module-source-map", //inline-source-map',
     devServer: {
-        contentBase: './public'
+        contentBase: "./public"
     },
     resolve: {
         extensions: [".ts", ".tsx", ".js", ".json"]

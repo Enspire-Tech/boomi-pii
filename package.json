@@ -23,7 +23,7 @@
   },
   "scripts": {
     "dev": "webpack serve --mode=development",
-    "build": "webpack -p"
+    "build": "webpack"
   },
   "flow": {
     "filenames": {
@@ -33,7 +33,6 @@
   },
   "devDependencies": {
     "typescript": "^4.2.3",
-    "webpack": "^4.44.2",
     "webpack-cli": "^4.6.0"
   }
 }
