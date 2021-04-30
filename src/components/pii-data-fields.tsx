@@ -1,7 +1,9 @@
 import * as React from "react";
 import { useState } from "react";
 import { IObjectData, IColumnObject } from "../interfaces/IMWData";
+import IComponentProps from "../interfaces/IComponentProps";
 import { Pager } from "./pager";
+// import IComponentProps from "../interfaces/IComponentProps";
 
 require("../styles/pii-data-fields.css");
 
@@ -11,33 +13,47 @@ interface IPIIData {
     accountId: string;
     columns: {label: string; developerName: string}[];
     values: JSX.Element[][];
-    filteredValues: JSX.Element[][];
-    pageSize: number;
-    sortColumn: string;
+    numberOfRecords: number;
 }
 
+// class PIIDataFields extends React.Component<IComponentProps, any> {
 
-export const PIIDataFields = (props: {id: string, flowKey: string}) => {
+export const PIIDataFields = 
+    (props: IComponentProps) => {
 
-    const [data, setData] = useState<IPIIData>(
-        {
+        const [currentPage, setCurrentPage] = useState(1);
+        const [searchTerms, setSearchTerms] = useState<string[]>([""]);
+        // const [sortColumn, setSortColumn] = useState("");
+        const [pageSize, setPageSize] = useState(10);
+
+        /*
+        state = {
             accountId: "",
             columns: [],
             values: [],
             filteredValues: [],
             pageSize: 10,
+            currentPage: 1,
+            searchTerms: [""],
             sortColumn: ""
-        }
-    );
+        };
+        */
+    
+    
+    const getData = (): IPIIData => {
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [searchTerms, setSearchTerms] = useState<string[]>([]);
-
-    const model = manywho.model.getComponent(props.id, props.flowKey);
-
-    const getData = (): void => {
         // get data from the engine
-        // console.log('model', model);
+        const model = manywho.model.getComponent(props.id, props.flowKey);
+        console.log("model", model);
+                
+       let searchTerms: string[] = [];
+       let data: IPIIData = {
+            accountId: "",
+            columns: [],
+            values: [],
+            numberOfRecords: 0
+        };
+
         // get the columns to display
         model.columns.map((col: IColumnObject) => 
             {
@@ -45,8 +61,32 @@ export const PIIDataFields = (props: {id: string, flowKey: string}) => {
                 searchTerms.push("");
             }
         );
-        // get the fields we're displaying and store
-        model.objectData.forEach((od: IObjectData) => { 
+        
+        if (model.objectData === null) return {
+                                            accountId: "",
+                                            columns: [{label: "", developerName: ""}],
+                                            values: [],
+                                            numberOfRecords: 0
+                                        };
+
+        data.numberOfRecords = model.objectData.length;
+        // get the fields we're displaying 
+        model.objectData.forEach((od: IObjectData, i: number) => { 
+
+            if (i + 1 < (currentPage - 1) * pageSize || i + 1 > currentPage * pageSize) return;
+            
+            let searchResult = true;
+            /*
+            searchTerms.forEach((term, i) => {
+                // if(typeof od.properties[i].children === "string" && 
+                if (!od.properties[i].contentValue.toLowerCase().includes(term.toLowerCase())) {
+                    searchResult = false;
+                }
+            });
+            */
+            
+            if ( !searchResult ) return;
+            
             const vals: JSX.Element[] = [];
             data.columns.forEach(col => {
                 const field = <span>{manywho.utils.getObjectDataProperty(od.properties, col.developerName).contentValue}</span>;
@@ -59,11 +99,10 @@ export const PIIDataFields = (props: {id: string, flowKey: string}) => {
                             </button>;
             vals.push(field);
             data.values.push(vals);
-            data.filteredValues.push(vals);
+            
         });
 
-        setData(data);
-
+        return data;
     };
 
     const onPageChange = (newPage: number) => {
@@ -77,34 +116,37 @@ export const PIIDataFields = (props: {id: string, flowKey: string}) => {
     };
 
     const updateSearchTerms = ((e: any) => {
+        
         searchTerms[parseInt(e.currentTarget.dataset.index)] = e.currentTarget.value;
-        setCurrentPage (1);
-        const vals = data.values;
-        data.filteredValues = [];
+
+        /*
+        let filteredValues: JSX.Element[][] = [];
         vals.forEach((val, i) => {
             let searchResult = true;
-            searchTerms.forEach((term, i) => {
+            state.searchTerms.forEach((term, i) => {
                 if(typeof val[i].props.children === "string" && 
                 !val[i].props.children.toLowerCase().includes(term.toLowerCase())) {
                     searchResult = false;
                 }
             });
-            if ( searchResult ) data.filteredValues.push(val);
+            if ( searchResult ) filteredValues.push(val);
         });
-        setData(data);
+        */
+        setCurrentPage (1);
         setSearchTerms([...searchTerms]);
+
+        // setData(data);
+        
     });
 
-    if ( data.columns.length === 0 && model.columns.length > 0 ) { getData(); }
-
+    let data = getData();
+    
     const colGridWidth = data.columns ? Math.floor(12 / (data.columns.length + 1)) : 1;
     const classes = `padded-small center-vertical col-xs-${(colGridWidth).toString()}`;
-    
-    // console.log("data", data);
-    
-    const startIdx = (data.pageSize * currentPage) - data.pageSize;
-    const endIdx = (data.pageSize * currentPage) - 1;
-
+    /*
+    const startIdx = (pageSize * currentPage) - pageSize;
+    const endIdx = (pageSize * currentPage) - 1;
+    */
     return <div  className="container-fluid pii-data-fields">
         <div className="row title-row">
             {
@@ -138,25 +180,26 @@ export const PIIDataFields = (props: {id: string, flowKey: string}) => {
         </div>
         <div className="row">
             {
-                data.filteredValues.map((value, i) => {
-                    if (i >= startIdx && i <= endIdx) {
+                data.values.map((value, i) => {
+                    //if (i >= startIdx && i <= endIdx) {
                         return value.map((val, i) => {
                             return <div className={classes}>
                                 {val}
                             </div>;
                         });
-                    }
+                    //}
                 })
             }
         </div>
 
         <Pager
-            pageSize = {data.pageSize}
+            pageSize = {pageSize}
             currentPage = {currentPage}
-            pages = {Math.ceil(data.filteredValues.length / data.pageSize)}
+            pages = {Math.ceil(data.numberOfRecords / pageSize)}
             onPageChange = {onPageChange}
         />
     </div>;
+
 };
 
 

@@ -12,7 +12,7 @@ export const Pager = (
 ) => {
 
     const onPageClick = (e: any) => {
-        
+
         if (e.currentTarget.dataset.page === props.currentPage) return;
 
         switch(e.currentTarget.dataset.page) {
@@ -26,10 +26,11 @@ export const Pager = (
                 props.onPageChange(parseInt(e.currentTarget.dataset.page));
             break;
         }
-    }
+    };
 
     let arrPages: number[] = [];
     if (props.pages >= 3) {
+
         switch (props.currentPage) {
             case 1:
                 arrPages = [1, 2, 3];
@@ -38,7 +39,7 @@ export const Pager = (
                 arrPages = [props.pages - 2, props.pages - 1, props.pages];
             break;
             default:
-                arrPages = [props.pages - 1, props.pages, props.pages + 1];
+                arrPages = [props.currentPage - 1, props.currentPage, props.currentPage + 1];
             break;
         }
     } else {
@@ -63,7 +64,7 @@ export const Pager = (
                             className={className}
                             data-page={i}>
                                 {i.toString()}
-                    </button>
+                    </button>;
                     })
                 }
                 <button
@@ -74,4 +75,4 @@ export const Pager = (
                 </button>
             </div>;
 
-}
+};

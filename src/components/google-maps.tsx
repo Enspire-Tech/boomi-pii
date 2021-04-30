@@ -6,7 +6,7 @@ import * as React from "react";
 import { IObjectData } from "../interfaces/IMWData";
 // import './index.css';
 
-class googleMaps extends React.Component<any, any> {
+class piiGoogleMap extends React.Component<any, any> {
 
     constructor(props: any) {
         super(props);
@@ -42,103 +42,62 @@ class googleMaps extends React.Component<any, any> {
             }],
             tilt: this.state.tilt,
         });
-debugger;
-        // Loop through all the data in the value this component is bound to
-        model.objectData.forEach((od: IObjectData) => {
-            
-            // TODO: BW - remove assumptions
-            
-            // Assume the latitude is the 1st "display column" set in the page component
-            // const latitude = result.properties.find(property => property.typeElementPropertyId === columns[0].typeElementPropertyId);
-            const latitude = manywho.utils.getObjectDataProperty(od.properties, "latitude").contentValue;
 
-            // Assume the longitude is the 2nd "display column" set in the page component
-            // const longitude = od.properties.find(property => property.typeElementPropertyId === columns[1].typeElementPropertyId);
-            const longitude = manywho.utils.getObjectDataProperty(od.properties, "longitude").contentValue;
-            
-            // Assume the name is the 3rd "display column" set in the page component
-            // const name = od.properties.find(property => property.typeElementPropertyId === columns[2].typeElementPropertyId);
-            const name = manywho.utils.getObjectDataProperty(od.properties, "name").contentValue;
-            /*
-            // Assume the available spots is the 4th "display column" set in the page component
-            const avail = result.properties.find(property => property.typeElementPropertyId === columns[3].typeElementPropertyId);
+        if (model.objectData !== null) {
+            // Add geolocations
+            model.objectData.forEach((od: IObjectData) => {
+                
+                const latitude = manywho.utils.getObjectDataProperty(od.properties, "latitude").contentValue;
 
-            // Assume the total spots is the 5th "display column" set in the page component
-            const capacity = result.properties.find(property => property.typeElementPropertyId === columns[4].typeElementPropertyId);
-*/
-            //CC Info Window
-            var contentString = "<div id=\"content\">"+
-              "<div id=\"siteNotice\">"+
-              "</div>"+
-              "<h5>" + name.contentValue +"</h5>"+
-              "<hr />"+
-              // avail.contentValue + "/" + capacity.contentValue+
-              "<a target=\"blank\" href=\"https://www.google.com/maps/dir/?api=1&origin=1.2966,103.776&destination=" + latitude.contentValue + "," + longitude.contentValue + "\">"+
-              "<hr />" +
-              "<p>Lat/Long:</p>" + latitude.contentValue + "/" + longitude.contentValue+
-              "</div>"+
-              "</div>";
+                const longitude = manywho.utils.getObjectDataProperty(od.properties, "longitude").contentValue;
+                
+                const name = manywho.utils.getObjectDataProperty(od.properties, "name").contentValue;
 
-            /*
-            var contentString2 = "<div id=\"content\">"+
-              "<div id=\"siteNotice\">"+
-              "</div>"+
-              "<h5> You are here! </h5>"+
-              "<hr />"+
-              "<p>Lat/Long: 1.2966 / 103.7764</p>"+
-              "</div>"+
-              "</div>";
+                //  Info Window
+                var infowindow = new google.maps.InfoWindow({
+                    content:  "<div id=\"content\">"+
+                    "<div id=\"siteNotice\">"+
+                    "</div>"+
+                    "<h5>" + name +"</h5>"+
+                    "<hr />"+
+                    // avail.contentValue + "/" + capacity.contentValue+
+                    "<a target=\"blank\" href=\"https://www.google.com/maps/dir/?api=1&origin=1.2966,103.776&destination=" + latitude + "," + longitude + "\">"+
+                    "<hr />" +
+                    "<p>Lat/Long:</p>" + latitude + "/" + longitude +
+                    "</div>"+
+                    "</div>",
+                });
 
-            // var youAreHere = '<div id="content"><h5>You Are Here</h5></div>';
-            */
+                //CC Boomi atom logos, goes with icon in marker var defintion
+                // var image = "https://files-manywho-com.s3.amazonaws.com/97d13c5b-c52a-4f69-a8d7-eee246bbacee/atom9.png";
 
-            var infowindow = new google.maps.InfoWindow({
-                content: contentString,
-              });
+                // Add the location to the map
+                var marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(latitude, longitude),
+                    map: map,
+                    animation: google.maps.Animation.DROP,
+                    title: name
+                });
 
-            /*
-            var infowindow2 = new google.maps.InfoWindow({
-                content: contentString2,
-              });
-            */
+                // //You are here Boomi Marker
+                // var marker2 = new google.maps.Marker({
+                //     position: new google.maps.LatLng(1.2966, 103.7764),
+                //     map: map,
+                //     animation: google.maps.Animation.DROP,
+                //     title: name.contentValue,
+                //     icon: image
+                // });
 
-            //CC Boomi atom logos, goes with icon in marker var defintion
-            // var image = "https://files-manywho-com.s3.amazonaws.com/97d13c5b-c52a-4f69-a8d7-eee246bbacee/atom9.png";
+                // Zoom to 9 when clicking on marker
+                google.maps.event.addListener(marker,"click",function() {
+                map.setZoom(14);
+                infowindow.open(map, marker);
+                });
 
-            // Add the list object as a marker on the map
-            var marker = new google.maps.Marker({
-                position: new google.maps.LatLng(latitude.contentValue, longitude.contentValue),
-                map: map,
-                animation: google.maps.Animation.DROP,
-                title: name.contentValue
             });
-
-            // //You are here Boomi Marker
-            // var marker2 = new google.maps.Marker({
-            //     position: new google.maps.LatLng(1.2966, 103.7764),
-            //     map: map,
-            //     animation: google.maps.Animation.DROP,
-            //     title: name.contentValue,
-            //     icon: image
-            // });
-
-            // Zoom to 9 when clicking on marker
-            google.maps.event.addListener(marker,"click",function() {
-              map.setZoom(14);
-              infowindow.open(map, marker);
-              });
-
-            // // Zoom to 9 when clicking on you're here marker
-            // google.maps.event.addListener(marker2,'click',function() {
-            //   map.setZoom(12);
-            //   infowindow2.open(map, marker2);
-            //   marker2.setAnimation(google.maps.Animation.BOUNCE);
-            //   setTimeout(function(){ marker2.setAnimation(null); }, 750);
-            //   });
-
-        });
-
+        }
     }
+
     render() {
         return (
             <div className="custom-component flex-container">
@@ -153,5 +112,5 @@ debugger;
     }
 }
 
-manywho.component.register("google-map2", googleMaps);
-export default googleMaps;
+manywho.component.register("piiGoogleMap", piiGoogleMap);
+export default piiGoogleMap;

@@ -22,7 +22,7 @@
     "write-file-webpack-plugin": "^4.5.1"
   },
   "scripts": {
-    "dev": "webpack serve --mode=development",
+    "dev": "webpack serve --mode=development --disable-host-check",
     "build": "webpack"
   },
   "flow": {

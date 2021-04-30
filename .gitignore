@@ -361,4 +361,4 @@ yarn.lock
 !.vscode/extensions.json
 /.changelog
 .npm/
-
+.map

@@ -1,0 +1,12 @@
+
+PII Requirements
+
+Query metadata (process, mapping), try to idenfity potential PII data
+-- identify data
+-- classification: personal, financial, job related, [.?.]
+-- IP / host name to geo-location
+-- render on mapping
+-- click on map, display details
+   -- add counts / classifications to map markers
+   -- lines/arrows between map markers
+   -- select / filter what is shown on map - process / classfication / etc.
