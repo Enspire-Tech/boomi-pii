@@ -36,7 +36,7 @@ export const PIIDataFields =
     const [searchTerms, setSearchTerms] = useState<string[]>([]);
 
     const updateSearchTerms = ((e: any) => {
-        if(!(e.currentTarget.value || e.currentTarget.value.length === 1)) return;
+        // if(!(e.currentTarget.value || e.currentTarget.value.length === 1)) return;
         searchTerms[parseInt(e.currentTarget.dataset.index)] = e.currentTarget.value;
         
         setSearchTerms([...searchTerms]);
@@ -126,34 +126,13 @@ export const PIIDataFields =
     const colGridWidth = data.columns ? Math.floor(12 / (data.columns.length + 1)) : 1;
     const classes = `padded-small center-vertical col-xs-${(colGridWidth).toString()}`;
     const pages = Math.ceil(data.numberOfRecords / pageSize);
-
+    const numberOfRecords = (`(${data.numberOfRecords}${searchTerms.some(term=>term.length > 0) ? " - filtered" : ""})`);
     headerLabel = <h4>
         {model.label}
         {data.numberOfRecords > 0 && 
-            <span className="small-text">&nbsp;({data.numberOfRecords})</span>
+            <span className="small-text">&nbsp;{numberOfRecords}</span>
         }
     </h4>;
-
-    if (data.numberOfRecords === 0 ) {
-        return <div  className="container-fluid pii-data-fields">
-                    {headerLabel}
-                    <div className="row title-row">
-                        {
-                            data.columns.map(col => {
-                                return <div className={classes}>
-                                    {col.label}
-                                </div>; 
-                            })
-                        }
-                        <div className={classes}>
-                            Profile
-                        </div>
-                    </div>
-                    <div className="row">
-                        No fields found
-                    </div>
-                </div>
-    }
 
     return <div  className="container-fluid pii-data-fields">
         {headerLabel}
