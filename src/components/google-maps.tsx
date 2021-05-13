@@ -11,7 +11,7 @@ class piiGoogleMap extends React.Component<any, any> {
     constructor(props: any) {
         super(props);
         this.state = {
-            zoom: 2,
+            zoom: 3,
             maptype: "roadmap", // terrain // roadmap  //hybrid
             heading: 90,
             tilt: 75,
@@ -19,16 +19,22 @@ class piiGoogleMap extends React.Component<any, any> {
             place_id: "",
             place_location: "",
             rotateControl: true,
-            lat: 1.2966,
-            long: 103.7764,
-            markers: []
+            lat: 40.7128,
+            long: -74.0060,
+            markers: [], 
+            unknownLocations: []
         };
     }
 
+    
     componentDidMount () {
         // Get the component's model, which includes any values bound to it
         const model = manywho.model.getComponent(this.props.id, this.props.flowKey);
         // const columns = manywho.component.getDisplayColumns(model.columns);
+
+        const infowindow = new google.maps.InfoWindow();
+        const unknownLocations: string[] = [];
+        var bounds = new google.maps.LatLngBounds();
 
         // Create the map in an element on the page
         let map = new google.maps.Map(document.getElementById("map-canvas"), {
@@ -51,25 +57,31 @@ class piiGoogleMap extends React.Component<any, any> {
 
                 const longitude = manywho.utils.getObjectDataProperty(od.properties, "longitude").contentValue;
                 
-                const name = manywho.utils.getObjectDataProperty(od.properties, "name").contentValue;
+                let name = manywho.utils.getObjectDataProperty(od.properties, "name").contentValue;
+                if (name.includes(":")) {
+                    const names = name.split(":");
+                    if (names[1] === "null") {
+                        name = `Unknown ${names[0]}`;
+                    } else {
+                        name = name.split(":")[1];
+                    }
+                }
 
-                //  Info Window
-                var infowindow = new google.maps.InfoWindow({
-                    content:  "<div id=\"content\">"+
-                    "<div id=\"siteNotice\">"+
-                    "</div>"+
-                    "<h5>" + name +"</h5>"+
-                    "<hr />"+
-                    // avail.contentValue + "/" + capacity.contentValue+
-                    "<a target=\"blank\" href=\"https://www.google.com/maps/dir/?api=1&origin=1.2966,103.776&destination=" + latitude + "," + longitude + "\">"+
-                    "<hr />" +
-                    "<p>Lat/Long:</p>" + latitude + "/" + longitude +
-                    "</div>"+
-                    "</div>",
-                });
+                if ( latitude === null || longitude === null ) {
+                    if (unknownLocations.some((loc: string) => { return loc === name; })) return;
+                    unknownLocations.push(name);
+                    return;
+                }
 
-                //CC Boomi atom logos, goes with icon in marker var defintion
-                // var image = "https://files-manywho-com.s3.amazonaws.com/97d13c5b-c52a-4f69-a8d7-eee246bbacee/atom9.png";
+                let hostName = manywho.utils.getObjectDataProperty(od.properties, "host name").contentValue;
+                
+                let city = manywho.utils.getObjectDataProperty(od.properties, "city").contentValue;
+                let stateCode = manywho.utils.getObjectDataProperty(od.properties, "region code").contentValue;
+
+                // const url = "javascript:void"; //`https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
+
+                //  CC Boomi atom logos, goes with icon in marker var defintion
+                //  var image = "https://files-manywho-com.s3.amazonaws.com/97d13c5b-c52a-4f69-a8d7-eee246bbacee/atom9.png";
 
                 // Add the location to the map
                 var marker = new google.maps.Marker({
@@ -79,34 +91,55 @@ class piiGoogleMap extends React.Component<any, any> {
                     title: name
                 });
 
-                // //You are here Boomi Marker
-                // var marker2 = new google.maps.Marker({
-                //     position: new google.maps.LatLng(1.2966, 103.7764),
-                //     map: map,
-                //     animation: google.maps.Animation.DROP,
-                //     title: name.contentValue,
-                //     icon: image
-                // });
+                bounds.extend(marker.position);
 
-                // Zoom to 9 when clicking on marker
-                google.maps.event.addListener(marker,"click",function() {
-                map.setZoom(14);
-                infowindow.open(map, marker);
+                marker.addListener("click", () => {
+                    //  Info Window
+                    infowindow.setContent("<div class=\"content\">" + 
+                                    "<h5>" + 
+                                        // "<a target=\"blank\" href=" + url + ">" + 
+                                            name +
+                                        // "</a>" +
+                                    "</h5>" +
+                                    "<span>" + hostName + "</span><br/>" +
+                                    city + ", " + stateCode +
+                                "</div>"
+                            );
+                    infowindow.open(map, marker);
                 });
-
+                
+                /*
+                // Zoom when clicking on marker
+                google.maps.event.addListener(marker,"click",function() {
+                    map.setZoom(14);
+                    infowindow.open(map, marker);
+                });
+                */
             });
         }
+        
+        map.fitBounds(bounds);
+        
+        if (unknownLocations.length > 0) this.setState({unknownLocations: unknownLocations});
     }
 
     render() {
         return (
             <div className="custom-component flex-container">
                 <div id="map-canvas"></div>
-                <div className="content-wrapper">
-                    <div id='autocomplete-input'>
-                        {/* <input id="ac-input" type='text' placeholder='Enter a location' /> */}
-                    </div>
+                {this.state.unknownLocations.length > 0 && 
+                <div className="pad-top">
+                    <p>
+                        <span className="glyphicon glyphicon-warning-sign pad-right-small warning" aria-hidden="true"></span>
+                        <strong>There are systems with unknown locations:</strong>
+                    </p>
+                    <p>
+                        {this.state.unknownLocations.map((loc: string) => {
+                            return <span className="pad-left">{loc} <br/></span>;
+                        })}
+                    </p>
                 </div>
+                }
             </div>
         );
     }

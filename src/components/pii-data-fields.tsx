@@ -18,7 +18,7 @@ interface IPIIData {
 
 // class PIIDataFields extends React.Component<IComponentProps, any> {
 
-export const PIIDataFields = 
+const PIIDataFields = 
     (props: IComponentProps) => {
 
     const uuid = uuidv4();
@@ -58,6 +58,13 @@ export const PIIDataFields =
         el?.classList.toggle("fade-in");
     };
     
+    const onRowClick = (e: any) => {
+
+        const anchor = e.target.querySelector("a");
+        if (anchor === null || anchor === undefined) return;
+        anchor.click();
+    };
+
     // get data from the engine ===================================================
     const model = manywho.model.getComponent(props.id, props.flowKey);
     // console.log("model", model);
@@ -73,7 +80,7 @@ export const PIIDataFields =
     model.columns.map((col: IColumnObject) => 
         {
             data.columns.push({label: col.label, developerName: col.developerName});
-            // ssearchTerms.push("");
+            searchTerms.push("");
         }
     );
     
@@ -90,6 +97,7 @@ export const PIIDataFields =
             let searchResult = true;
             
             searchTerms.forEach((term, i) => {
+                if (term === "" || term === null || term === undefined) return;
                 if (!manywho.utils.getObjectDataProperty(od.properties, data.columns[i].developerName).contentValue.toLowerCase().includes(term.toLowerCase())) {
                     searchResult = false;
                 }
@@ -107,15 +115,12 @@ export const PIIDataFields =
 
                         const vals: JSX.Element[] = [];
                         data.columns.forEach(col => {
-                            const field = <span>{manywho.utils.getObjectDataProperty(od.properties, col.developerName).contentValue}</span>;
+                            const field = <a href={manywho.utils.getObjectDataProperty(od.properties, "Profile Link").contentValue} target="_blank">
+                                                {manywho.utils.getObjectDataProperty(od.properties, col.developerName).contentValue}
+                                            </a>;
                             vals.push(field);
                         });
-                        const link = <button className="btn fiter">
-                                            <a href={manywho.utils.getObjectDataProperty(od.properties, "Profile Link").contentValue} target="_blank">
-                                                View Profile
-                                            </a>
-                                        </button>;
-                        vals.push(link);
+
                         data.values.push(vals);
                     }
                 }
@@ -123,7 +128,7 @@ export const PIIDataFields =
         };
     }
 
-    const colGridWidth = data.columns ? Math.floor(12 / (data.columns.length + 1)) : 1;
+    const colGridWidth = data.columns ? Math.floor(12 / (data.columns.length)) : 1;
     const classes = `padded-small center-vertical col-xs-${(colGridWidth).toString()}`;
     const pages = Math.ceil(data.numberOfRecords / pageSize);
     const numberOfRecords = (`(${data.numberOfRecords}${searchTerms.some(term=>term.length > 0) ? " - filtered" : ""})`);
@@ -148,9 +153,6 @@ export const PIIDataFields =
                     </div>; 
                 })
             }
-            <div className={classes}>
-                Profile
-            </div>
         </div>
         <div className="row filter-row hidden" id={uuid}>
             {
@@ -166,17 +168,17 @@ export const PIIDataFields =
                 })
             }
         </div>
-        <div className="row">
             {
                 data.values.map((value, i) => {
-                    return value.map((val, i) => {
-                        return <div className={classes}>
-                            {val}
-                        </div>;
-                    });
+                    return <div className="row clickable" onClick={onRowClick}>
+                                {value.map((val, i) => {
+                                    return <div className={classes}>
+                                            {val}
+                                        </div>;
+                                })}
+                            </div>;
                 })
             }
-        </div>
         {pages > 1 && 
         <Pager
             pageSize = {pageSize}

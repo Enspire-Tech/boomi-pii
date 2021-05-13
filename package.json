@@ -4,6 +4,7 @@
   "author": "Enspire Technologies",
   "main": "index.js",
   "dependencies": {
+    "@amcharts/amcharts4": "^4.10.18",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -19,11 +20,12 @@
     "source-map-loader": "^2.0.1",
     "ts-loader": "^8.1.0",
     "web-vitals": "^1.0.1",
+    "webpack-dev-server": "^3.11.1",
     "write-file-webpack-plugin": "^4.5.1"
   },
   "scripts": {
     "dev": "webpack serve --mode=development --disable-host-check",
-    "build": "webpack"
+    "build": "webpack -p"
   },
   "flow": {
     "filenames": {
