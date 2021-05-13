@@ -25,7 +25,7 @@
   },
   "scripts": {
     "dev": "webpack serve --mode=development --disable-host-check",
-    "build": "webpack -p"
+    "build": "webpack"
   },
   "flow": {
     "filenames": {
