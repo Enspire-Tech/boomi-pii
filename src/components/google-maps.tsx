@@ -61,8 +61,8 @@ class piiGoogleMap extends React.Component<any, any> {
                 if (name.includes(":")) {
                     const names = name.split(":");
                     if (names[1] === "null") {
-                        name = `Unknown ${names[0]}`;
-                    } else {
+                        name = `${names[0]}`;
+                    } else { 
                         name = name.split(":")[1];
                     }
                 }
