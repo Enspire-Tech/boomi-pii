@@ -60,9 +60,11 @@ class piiGoogleMap extends React.Component<any, any> {
                 let name = manywho.utils.getObjectDataProperty(od.properties, "name").contentValue;
                 if (name.includes(":")) {
                     const names = name.split(":");
-                    if (names[1] !== "null") {
+                    if (names[1] === "null") {
+                        name = `${names[0]}`;
+                    } else { 
                         name = name.split(":")[1];
-                    } 
+                    }
                 }
 
                 if ( latitude === null || longitude === null ) {
