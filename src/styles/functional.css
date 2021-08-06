@@ -82,6 +82,7 @@
 .mw-bs .center-vertical {
   display: flex;
   align-items: center;
+  overflow: none;
 }
 .mw-bs .complete {
   color: #20b338;

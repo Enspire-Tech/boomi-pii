@@ -115,10 +115,29 @@ const PIIDataFields =
 
                         const vals: JSX.Element[] = [];
                         data.columns.forEach(col => {
-                            const field = <a href={manywho.utils.getObjectDataProperty(od.properties, "Profile Link").contentValue} target="_blank">
-                                                {manywho.utils.getObjectDataProperty(od.properties, col.developerName).contentValue}
-                                            </a>;
-                            vals.push(field);
+
+                            let link = <a href={manywho.utils.getObjectDataProperty(od.properties, "Profile Link").contentValue} target="_blank">
+                                            View Profile
+                                        </a>;
+
+                            switch (col.developerName) {
+                                case "Profile Link": 
+                                    vals.push(link);
+                                break;
+
+                                case "Process Link":
+                                    link = <a href={manywho.utils.getObjectDataProperty(od.properties, "Profile Link").contentValue} target="_blank">
+                                                        View Process
+                                                    </a>;
+                                    vals.push(link);
+                                break;
+                                
+                                default:
+                                    const field = <a href={manywho.utils.getObjectDataProperty(od.properties, "Profile Link").contentValue} target="_blank">
+                                                        {manywho.utils.getObjectDataProperty(od.properties, col.developerName).contentValue}
+                                                    </a>;
+                                    vals.push(field);
+                            }
                         });
 
                         data.values.push(vals);
