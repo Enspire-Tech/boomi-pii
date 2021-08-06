@@ -115,9 +115,6 @@ const PIIDataFields =
 
                         const vals: JSX.Element[] = [];
                         data.columns.forEach(col => {
-                            let label =  manywho.utils.getObjectDataProperty(od.properties, col.developerName).contentValue;
-                            console.log ({label});
-                            console.log ({col});
 
                             let link = <a href={manywho.utils.getObjectDataProperty(od.properties, "Profile Link").contentValue} target="_blank">
                                             View Profile
@@ -125,9 +122,6 @@ const PIIDataFields =
 
                             switch (col.developerName) {
                                 case "Profile Link": 
-                                    link = <a href={manywho.utils.getObjectDataProperty(od.properties, "Profile Link").contentValue} target="_blank">
-                                                        View Profile
-                                                    </a>;
                                     vals.push(link);
                                 break;
 
@@ -152,8 +146,6 @@ const PIIDataFields =
             }
         };
     }
-
-    debugger;
 
     const colGridWidth = data.columns ? Math.floor(12 / (data.columns.length)) : 1;
     const classes = `padded-small center-vertical col-xs-${(colGridWidth).toString()}`;
