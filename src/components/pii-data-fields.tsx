@@ -126,7 +126,7 @@ const PIIDataFields =
                                 break;
 
                                 case "Process Link":
-                                    link = <a href={manywho.utils.getObjectDataProperty(od.properties, "Profile Link").contentValue} target="_blank">
+                                    link = <a href={manywho.utils.getObjectDataProperty(od.properties, "Process Link").contentValue} target="_blank">
                                                         View Process
                                                     </a>;
                                     vals.push(link);
