@@ -133,9 +133,8 @@ const PIIDataFields =
                                 break;
                                 
                                 default:
-                                    const field = <a href={manywho.utils.getObjectDataProperty(od.properties, "Profile Link").contentValue} target="_blank">
-                                                        {manywho.utils.getObjectDataProperty(od.properties, col.developerName).contentValue}
-                                                    </a>;
+                                    const field = <p>{manywho.utils.getObjectDataProperty(od.properties, col.developerName).contentValue}
+                                                    </p>;
                                     vals.push(field);
                             }
                         });
